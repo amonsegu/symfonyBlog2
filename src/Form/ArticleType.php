@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Article;
+use App\Entity\Category;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -25,13 +26,21 @@ class ArticleType extends AbstractType
                     [
                         'label'=>'Contenu'
                     ])
-            ->add('publicationDate')
             ->add('category',
                 //select sur une entité Doctrine
-                EntityType::class,)
-            ->add('author')
+                EntityType::class,
+                [
+                    'label'=>'Categorie',
+                    'class'=>Category::class,
+                    //attribut qui s'affiche dans le select
+                    'choice_label'=>'name',
+                    //pour avoir une 1ere option vide qui indique le text choisissez...
+                    'placeholder'=>'Choisissez une catégorie'
+                ]
+            )
         ;
     }
+
 
     public function configureOptions(OptionsResolver $resolver)
     {

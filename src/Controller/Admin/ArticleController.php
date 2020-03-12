@@ -4,6 +4,7 @@
 namespace App\Controller\Admin;
 
 
+use App\Form\ArticleType;
 use App\Repository\ArticleRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
@@ -32,12 +33,42 @@ class ArticleController extends AbstractController
     /**
      * @Route("/edition")
      */
-    public function edit()
+    public function edit(Request $request)
     {
+        /*
+        * Intégrer le formulaire pour l'enregistrement d'un article
+        * Validation : tous les champs obligatoires
+        * Avant l'enregistrement setter la date de publication à maintenant
+        * et l'auteur avec l'utilisateur connecté ($this->getUser() dans un contrôleur)
+        *
+        * Adapter la page pour la modification :
+        * - pas de modification de la date de publication ni de l'auteur
+        */
+        $article = new ArticleType();
+
+        $form = $this->createForm(ArticleType::class, $article);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted()){
+            if ($form->isValid()){
+
+            }else{
+                $this->addFlash(
+                    'danger',
+                    'Le formulaire contient des erreurs'
+                );
+
+            }
+        }
         return $this->render(
             'admin/article/edit.html.twig'
         );
     }
+
+
+
+
 
 
 
