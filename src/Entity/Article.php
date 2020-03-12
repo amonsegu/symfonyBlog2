@@ -51,6 +51,28 @@ class Article
      */
     private $author;
 
+    /**
+     * @ORM\Column(type="string", length=100, nullable=true)
+     *
+     */
+    private $image;
+
+    /**
+     * @return mixed
+     */
+    public function getImage()
+    {
+        return $this->image;
+    }
+
+    /**
+     * @param mixed $image
+     */
+    public function setImage($image): void
+    {
+        $this->image = $image;
+    }
+
     public function __construct(){
         $this->setPublicationDate(new \DateTime());
     }

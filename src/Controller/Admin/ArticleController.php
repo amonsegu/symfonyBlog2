@@ -10,6 +10,7 @@ use App\Repository\ArticleRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -34,9 +35,9 @@ class ArticleController extends AbstractController
     }
 
     /**
-     * @Route("/edition")
+     * @Route("/edition/{id}", defaults={"id": null}, requirements={"id": "\d+"})
      */
-    public function edit(Request $request, EntityManagerInterface $manager)
+    public function edit(Request $request, EntityManagerInterface $manager, $id)
     {
         /*
         * Intégrer le formulaire pour l'enregistrement d'un article
@@ -47,8 +48,17 @@ class ArticleController extends AbstractController
         * Adapter la page pour la modification :
         * - pas de modification de la date de publication ni de l'auteur
         */
-        $article = new Article();
-        $article->setAuthor($this->getUser());
+
+
+        if(is_null($id)){ //création
+            $article = new Article();
+            $article->setAuthor($this->getUser());
+        }else{ //modification
+            $article = $manager->find(Article::class,$id);
+            if(is_null($article)){
+                throw new NotFoundHttpException();
+            }
+        }
 
         $form = $this->createForm(ArticleType::class, $article);
 
@@ -80,7 +90,28 @@ class ArticleController extends AbstractController
     }
 
 
+    /**
+     * @param EntityManagerInterface $manager
+     * @param Article $article
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     *
+     * @Route("/suppression/{id}")
+     */
+    public function delete(EntityManagerInterface $manager, Article $article)
+    {
+            //suppression en bdd
+    $manager->remove($article);
+            $manager->flush();
 
+            $this->addFlash('success', "L'article est supprimé");
+
+            return $this->redirectToRoute('app_admin_article_index');
+
+
+
+
+
+    }
 
 
 
