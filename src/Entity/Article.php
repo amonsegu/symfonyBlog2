@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\ArticleRepository")
@@ -18,6 +19,7 @@ class Article
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(message="Le titre est obligatoire")
      */
     private $title;
 
@@ -41,10 +43,17 @@ class Article
     private $category;
 
     /**
+     * Clé étrangere vers l'id de category en bdd,
+     * objet category dans l'attribut de l'entité
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="articles")
      * @ORM\JoinColumn(nullable=false)
+     * @Assert\NotBlank(message="la catégorie est obligatoire")
      */
     private $author;
+
+    public function __construct(){
+        $this->setPublicationDate(new \DateTime());
+    }
 
     public function getId(): ?int
     {

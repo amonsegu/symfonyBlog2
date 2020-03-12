@@ -4,9 +4,12 @@
 namespace App\Controller\Admin;
 
 
+use App\Entity\Article;
 use App\Form\ArticleType;
 use App\Repository\ArticleRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -33,7 +36,7 @@ class ArticleController extends AbstractController
     /**
      * @Route("/edition")
      */
-    public function edit(Request $request)
+    public function edit(Request $request, EntityManagerInterface $manager)
     {
         /*
         * Intégrer le formulaire pour l'enregistrement d'un article
@@ -44,7 +47,8 @@ class ArticleController extends AbstractController
         * Adapter la page pour la modification :
         * - pas de modification de la date de publication ni de l'auteur
         */
-        $article = new ArticleType();
+        $article = new Article();
+        $article->setAuthor($this->getUser());
 
         $form = $this->createForm(ArticleType::class, $article);
 
@@ -52,6 +56,12 @@ class ArticleController extends AbstractController
 
         if ($form->isSubmitted()){
             if ($form->isValid()){
+                $manager->persist($article);
+                $manager->flush();
+
+                $this->addFlash('success', "L'article est enregistré");
+
+                return $this->redirectToRoute('app_admin_article_index');
 
             }else{
                 $this->addFlash(
@@ -62,7 +72,10 @@ class ArticleController extends AbstractController
             }
         }
         return $this->render(
-            'admin/article/edit.html.twig'
+            'admin/article/edit.html.twig',
+            [
+                'form' => $form->createView()
+            ]
         );
     }
 

@@ -4,4 +4,18 @@
 
     <h1>Edition article</h1>
 
+    {{ form_start(form) }}
+    {{ form_row(form.title) }}
+    {{ form_row(form.content) }}
+    {{ form_row(form.category) }}
+
+    <div class="text-right">
+        <button type="submit" class="btn btn-primary">
+            Enregistrer
+        </button>
+        <a class="btn btn-outline-secondary"
+           href="{{ path('app_admin_article_index') }}">
+            Retour
+        </a>
+    </div>
 {% endblock %}
